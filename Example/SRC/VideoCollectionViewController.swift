@@ -12,12 +12,12 @@ import Photos
 @objc
 class VideoCollectionViewController: UICollectionViewController {
 
-    var assetsFetchResults: [PHFetchResult] = []
+    var assetsFetchResults: [PHFetchResult] = [PHFetchResult<AnyObject>]()
     var moments: [PHAssetCollection]        = []
 
     var userAlbumsFetchPredicate       = NSPredicate(format: "estimatedAssetCount > 0")
     var userAlbumsFetchSortDescriptors = [NSSortDescriptor(key: "startDate", ascending: false)]
-    var inAlbumItemsFetchPredicate     = NSPredicate(format: "mediaType == %d", PHAssetMediaType.Video.rawValue)
+    var inAlbumItemsFetchPredicate     = NSPredicate(format: "mediaType == %d", PHAssetMediaType.video.rawValue)
     
     var selectedSnapshotView: UIView?
     
@@ -44,7 +44,7 @@ class VideoCollectionViewController: UICollectionViewController {
     // MARK: - Constuctor/Destructor
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self)
+        PHPhotoLibrary.shared().registerChangeObserver(self)
     }
     
     deinit{
