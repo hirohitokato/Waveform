@@ -8,19 +8,20 @@
 
 import UIKit
 
+public
 class PlaybackPositionView: UIView {
     
     init() {
         super.init(frame: .zero)
         self.isOpaque = false
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.isOpaque = false
     }
     
-    override func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         super.draw(rect)
         guard let relativePosition = self.position else {
             return

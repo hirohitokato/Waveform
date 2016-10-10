@@ -11,10 +11,12 @@ import AVFoundation
 
 @objc
 final
+public
 class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
     
-    override init() {
+    init(identifier: String = Defaults.identifier) {
         super.init()
+        self.identifier = identifier
         self.createChannelsForDefaultLogicTypes()
     }
     
@@ -73,17 +75,18 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
         }
     }
     
-    func willStartReadSamples(estimatedSampleCount: Int) {
+    public func willStartReadSamples(estimatedSampleCount: Int) {
+
         configure(neededSamplesCount: neededSamplesCount, estimatedSampleCount: estimatedSampleCount)
     }
     
-    func didStopReadSamples(count: Int) {
+    public func didStopReadSamples(count: Int) {
         for channel in channels {
             channel.complete()
         }
     }
         
-    func handleSamples(_ samplesContainer: AudioSamplesContainer) {
+    public func handleSamples(_ samplesContainer: AudioSamplesContainer) {
 
         for channelIndex in 0..<numberOfScaleLevels {
             
@@ -115,18 +118,21 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
     private var channels = [Channel]()
     
     
-    var onChannelsChanged: () -> () = {_ in}
+    public var onChannelsChanged: () -> () = {_ in}
 
-    var channelsCount: Int = 2
+    public var channelsCount: Int = 2
     
-    func channelAtIndex(_ index: Int) -> Channel {
+    public func channelAtIndex(_ index: Int) -> Channel {
         return channels[index + scaleIndex * channelsCount]
     }
 }
 
 //MARK: -
 //MARK: - Utility
-struct DataRange {
+@objc
+public
+final
+class DataRange: NSObject {
     let location: Double
     let length: Double
     
@@ -134,14 +140,10 @@ struct DataRange {
         self.location = location
         self.length   = length
     }
-
-    init(location: CGFloat, length: CGFloat) {
-        self.location = Double(location)
-        self.length   = Double(length)
-    }
     
-    init() {
+    override init() {
         self.location = 0.0
         self.length   = 1.0
+        super.init()
     }
 }

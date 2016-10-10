@@ -8,6 +8,8 @@
 
 import UIKit.UIControl
 
+@objc
+public
 class Plot: UIView {
     
     weak var dataSource: PlotDataSource? {
@@ -26,7 +28,7 @@ class Plot: UIView {
     
     private var pathLayer: CAShapeLayer!
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.isOpaque = false
     }
@@ -51,7 +53,7 @@ class Plot: UIView {
         self.pathLayer.drawsAsynchronously = true
     }
     
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         self.redraw()
     }
@@ -60,12 +62,12 @@ class Plot: UIView {
         self.setNeedsDisplay()
     }
     
-    override func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         guard let context = UIGraphicsGetCurrentContext() else {
             return
         }
         
-        context.setLineWidth(1)///UIScreen.mainScreen().scale)
+        context.setLineWidth(1/UIScreen.main.scale)
         context.addPath(self.newPathPart())
         context.setStrokeColor(self.lineColor.cgColor)
         context.interpolationQuality = .none

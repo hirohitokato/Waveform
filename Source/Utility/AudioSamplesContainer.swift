@@ -8,7 +8,8 @@
 
 import Foundation
 
-struct AudioSamplesContainer {
+public
+class AudioSamplesContainer: NSObject {
     let buffer: UnsafePointer<Int16>
     let samplesCount: Int
     let numberOfChannels: Int
@@ -18,6 +19,14 @@ struct AudioSamplesContainer {
         self.buffer           = UnsafeRawPointer(buffer).assumingMemoryBound(to: Int16.self)
         self.samplesCount     = length * MemoryLayout<T>.size/MemoryLayout<Int16>.size / numberOfChannels
         self.numberOfChannels = numberOfChannels
+    }
+    
+    convenience init(buffer_int16: UnsafePointer<Int16>, length: Int, numberOfChannels: Int) {
+        self.init(buffer: buffer_int16, length: length, numberOfChannels: numberOfChannels)
+    }
+
+    convenience init(buffer_int8: UnsafePointer<Int8>, length: Int, numberOfChannels: Int) {
+        self.init(buffer: buffer_int8, length: length, numberOfChannels: numberOfChannels)
     }
     
     func sample(channelIndex: Int, sampleIndex: Int) -> Int16 {

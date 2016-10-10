@@ -50,7 +50,7 @@ class Buffer {
         return _buffer?[index] ?? Double.infinity
     }
 }
-
+public
 final
 class GenericBuffer<T: NumberType>: Buffer {
     var __buffer: UnsafeMutablePointer<T>?

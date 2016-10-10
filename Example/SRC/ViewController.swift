@@ -72,8 +72,8 @@ class ViewController: UIViewController, DVGDiagramMovementsDelegate {
     
     @IBAction func readAudioAndDrawWaveform() {
         self.waveform.readAndDrawSynchronously({[weak self] in
-            if $0 != nil {
-                print("error:", $0!)
+            if $0.1 != nil {
+                print("error:", $0.1)
                 self?.showAlert("Can't read asset")
             } else {
                 print("waveform finished drawing")
