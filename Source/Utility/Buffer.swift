@@ -57,7 +57,6 @@ class GenericBuffer<T: NumberType>: Buffer {
 
     override final func append(value: Double) {
         
-        guard (__buffer != nil) else {return}
 
         if maxValue < value { maxValue = value }
         if minValue > value { minValue = value }
@@ -66,21 +65,22 @@ class GenericBuffer<T: NumberType>: Buffer {
             let newSpace = max(space * 2, 16)
             self.moveSpace(to: newSpace)
         }
+        guard (__buffer != nil) else {return}
         (__buffer! + count).initialize(to: T(value))
         count += 1
     }
     
     override final func moveSpace(to newSpace: Int) {
         
-        guard (__buffer != nil) else {return}
-        
         let newPtr = UnsafeMutablePointer<T>.allocate(capacity: newSpace)
         
-        newPtr.moveInitialize(from: __buffer!, count: count)
-        
-        __buffer!.deallocate(capacity: count)
-        
-        __buffer = newPtr
+        if (__buffer == nil){
+            __buffer = newPtr
+        } else {
+            newPtr.moveInitialize(from: __buffer!, count: count)
+            __buffer!.deallocate(capacity: count)
+            __buffer = newPtr
+        }
         space = newSpace
     }
     
