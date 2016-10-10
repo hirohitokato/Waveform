@@ -12,16 +12,16 @@ class PlaybackPositionView: UIView {
     
     init() {
         super.init(frame: .zero)
-        self.opaque = false
+        self.isOpaque = false
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.opaque = false
+        self.isOpaque = false
     }
-
-    override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
+    
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
         guard let relativePosition = self.position else {
             return
         }
@@ -36,17 +36,18 @@ class PlaybackPositionView: UIView {
             fatalError("No context")
         }
         
-        CGContextSetStrokeColorWithColor(context, self.lineColor.CGColor)
-        CGContextSetLineWidth(context, lineWidth)
+        context.setStrokeColor(self.lineColor.cgColor)
+        context.setLineWidth(lineWidth)
         
         
         
-        let cursor = CGPathCreateMutable()
-        CGPathMoveToPoint(cursor, nil, position, 0)
-        CGPathAddLineToPoint(cursor, nil, position, self.bounds.height)
-        CGContextAddPath(context, cursor)
+        let cursor = CGMutablePath()
         
-        CGContextStrokePath(context)
+        cursor.move(to: CGPoint(x:position,y:0))
+        cursor.addLine(to: CGPoint(x:position,y:self.bounds.height))
+        context.addPath(cursor)
+        
+        context.strokePath()
         
     }
     
@@ -56,6 +57,6 @@ class PlaybackPositionView: UIView {
     var position: CGFloat? {
         didSet { self.setNeedsDisplay() }
     }
-    var lineColor = UIColor.whiteColor()
+    var lineColor = UIColor.white
     var lineWidth: CGFloat = 2.0
 }

@@ -46,7 +46,7 @@ class PlotModel: NSObject, PlotDataSource {
     var identifier  = ""
     var needsRedraw = false
     
-    func pointAtIndex(index: Int) -> CGPoint {
+    func pointAtIndex(_ index: Int) -> CGPoint {
         guard let channel = self.channel else {
             return .zero
         }

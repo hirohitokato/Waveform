@@ -12,9 +12,9 @@ extension UIView {
     func attachBoundsOfSuperview(){
         assert(self.superview != nil, "There are no superview")
         let views = ["view": self]
-        let horizontalConstraints = NSLayoutConstraint.constraintsWithVisualFormat("|[view]|", options: [], metrics: nil, views: views)
+        let horizontalConstraints = NSLayoutConstraint.constraints(withVisualFormat: "|[view]|", options: [], metrics: nil, views: views)
         self.superview!.addConstraints(horizontalConstraints)
-        let verticalConstraints   = NSLayoutConstraint.constraintsWithVisualFormat("V:|[view]|", options: [], metrics: nil, views: views)
+        let verticalConstraints   = NSLayoutConstraint.constraints(withVisualFormat: "V:|[view]|", options: [], metrics: nil, views: views)
         self.superview!.addConstraints(verticalConstraints)
     }
 }

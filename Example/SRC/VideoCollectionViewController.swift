@@ -21,7 +21,7 @@ class VideoCollectionViewController: UICollectionViewController {
     
     var selectedSnapshotView: UIView?
     
-    private struct Constants {
+    fileprivate struct Constants {
         static let collectionViewCellReuseId = "video_collection_view_cell"
         static let collectionHeaderReuseId   = "video_collection_view_header"
         static let collectionFooterReuseId   = "FooterView"
@@ -44,11 +44,11 @@ class VideoCollectionViewController: UICollectionViewController {
     // MARK: - Constuctor/Destructor
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        PHPhotoLibrary.shared().registerChangeObserver(self)
+        PHPhotoLibrary.shared().register(self)
     }
     
     deinit{
-        PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
     
     // MARK: - View Controller Lifetime
@@ -57,10 +57,10 @@ class VideoCollectionViewController: UICollectionViewController {
 
         // Hide nav bar bottom line
         let navBarHairlineImageView: UIImageView? = navigationController?.barHairlineImageView()
-        navBarHairlineImageView?.hidden           = true;
+        navBarHairlineImageView?.isHidden           = true;
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         clearApplicationTmpDirectory()
 
@@ -74,17 +74,17 @@ class VideoCollectionViewController: UICollectionViewController {
 
 // MARK: - UICollectionViewDataSource
 extension VideoCollectionViewController {
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return assetsFetchResults.count
     }
     
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return assetsFetchResults[section].count
     }
     
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(Constants.collectionViewCellReuseId, forIndexPath:indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.collectionViewCellReuseId, for:indexPath)
         
         if let cell = cell as? VideoCollectionViewCell,
             let asset = self.assetsFetchResults[indexPath.section][indexPath.row] as? PHAsset {
@@ -96,14 +96,14 @@ extension VideoCollectionViewController {
         return cell
     }
     
-    override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
-        let reuseId = Constants.collectionSupplementaryElementReuseIdForKind(kind)
-        let reusableView = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: reuseId, forIndexPath: indexPath)
+        let reuseId = Constants.collectionSupplementaryElementReuseIdForKind(kind: kind)
+        let reusableView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: reuseId, for: indexPath)
 
         switch (kind, reusableView) {
         case (UICollectionElementKindSectionHeader, let headerView as VideoCollectionReusableView):
-            headerView.configureWithCollection(self.moments[indexPath.section])
+            headerView.configureWithCollection(collection: self.moments[indexPath.section])
         case (UICollectionElementKindSectionFooter, _): ()
         default:
             fatalError()
@@ -119,20 +119,20 @@ extension VideoCollectionViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
         
         let count = floor(self.view.bounds.width/Constants.preview_width);
-        let width = CGRectGetWidth(self.view.bounds)/count;
-        return CGSizeMake(width, Constants.preview_height);
+        let width = self.view.bounds.width/count;
+        return CGSize(width: width,height: Constants.preview_height);
     }
     
     func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-        return UIEdgeInsetsZero
+        return .zero
     }
 }
 
 // MARK: - Navigation/Transition
 extension VideoCollectionViewController {
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let controller     = segue.destinationViewController as! ViewController
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let controller     = segue.destination as! ViewController
         let cell           = sender as! VideoCollectionViewCell
         controller.phAsset = cell.videoSource
     }
@@ -143,30 +143,28 @@ extension VideoCollectionViewController {
 extension VideoCollectionViewController {
 
     func updateAssetsFetchResultsAndMoments() {
-        var assets  = [PHFetchResult]()
+        var assets  = [PHFetchResult<AnyObject>]()
         var moments = [PHAssetCollection]()
         
         let userAlbumsFetchOptions             = PHFetchOptions()
         userAlbumsFetchOptions.predicate       = userAlbumsFetchPredicate
         userAlbumsFetchOptions.sortDescriptors = userAlbumsFetchSortDescriptors
         
-        let userAlbumsFetchResult = PHAssetCollection.fetchMomentsWithOptions(userAlbumsFetchOptions)
+        let userAlbumsFetchResult = PHAssetCollection.fetchMoments(with: userAlbumsFetchOptions)
         
         let inAlbumItemsFetchOptions       = PHFetchOptions()
         inAlbumItemsFetchOptions.predicate = inAlbumItemsFetchPredicate
         
-        userAlbumsFetchResult.enumerateObjectsUsingBlock { (collection, _, _) -> Void in
-            guard let collection = collection as? PHAssetCollection else {
-                return
-            }
+        
+        userAlbumsFetchResult.enumerateObjects ({ (collection, _, _) -> Void in
             
-            let assetsFetchResult = PHAsset.fetchAssetsInAssetCollection(collection, options: inAlbumItemsFetchOptions)
+            let assetsFetchResult = PHAsset.fetchAssets(in: collection, options: inAlbumItemsFetchOptions)
             
             if assetsFetchResult.count > 0 {
-                assets.append(assetsFetchResult)
+                assets.append(assetsFetchResult as! PHFetchResult<AnyObject>)
                 moments.append(collection)
             }
-        }
+        })
         
         self.moments            = moments
         self.assetsFetchResults = assets
@@ -176,20 +174,21 @@ extension VideoCollectionViewController {
 
 // MARK: - View Controller Auto Rotation
 extension VideoCollectionViewController {
-    override func shouldAutorotate() -> Bool {
+    
+    override var shouldAutorotate: Bool {
         return false
     }
     
-    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        return .Portrait
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
     }
 }
 
 
 // MARK: - PHPhotoLibraryChangeObserver
 extension VideoCollectionViewController: PHPhotoLibraryChangeObserver {
-    func photoLibraryDidChange(changeInstance: PHChange) {
-        dispatch_async(dispatch_get_main_queue()) { () -> Void in
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        DispatchQueue.main.async { () -> Void in
             self.updateAssetsFetchResultsAndMoments()
             self.collectionView?.reloadData()
         }
@@ -208,9 +207,9 @@ extension UINavigationController {
 
 // MARK: - UIView ex
 extension UIView {
-    func findSubview<T: UIView>(predicate: (T) -> (Bool)) -> T? {
+    func findSubview<T: UIView>(_ predicate: (T) -> (Bool)) -> T? {
         
-        if let self_ = self as? T where predicate(self_) {
+        if let self_ = self as? T , predicate(self_) {
             return self_
         }
         
@@ -226,10 +225,10 @@ extension UIView {
 // MARK: - Utility
 func clearApplicationTmpDirectory() {
     do {
-        let tmpDirectoryContent = try NSFileManager.defaultManager().contentsOfDirectoryAtPath(NSTemporaryDirectory())
+        let tmpDirectoryContent = try FileManager.default.contentsOfDirectory(atPath: NSTemporaryDirectory())
         for file in tmpDirectoryContent {
             let filePath = NSTemporaryDirectory() + file
-            try NSFileManager.defaultManager().removeItemAtPath(filePath)
+            try FileManager.default.removeItem(atPath: filePath)
         }
     } catch (let error) {
         print("\(#function), catched error:\(error)")

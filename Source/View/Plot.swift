@@ -16,7 +16,7 @@ class Plot: UIView {
         }
     }
     
-    var lineColor: UIColor = .blackColor() {
+    var lineColor: UIColor = .black{
         didSet{
 //            self.pathLayer.strokeColor = lineColor.CGColor
         }
@@ -28,23 +28,23 @@ class Plot: UIView {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.opaque = false
+        self.isOpaque = false
     }
     
     convenience init(){
-        self.init(frame: CGRectZero)
-        self.opaque = false
+        self.init(frame: .zero)
+        self.isOpaque = false
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.opaque = false
+        self.isOpaque = false
     }
     
     func setupPathLayer() {
         
         self.pathLayer             = CAShapeLayer()
-        self.pathLayer.strokeColor = UIColor.blackColor().CGColor
+        self.pathLayer.strokeColor = UIColor.black.cgColor
         self.pathLayer.lineWidth   = 1.0
         self.layer.addSublayer(self.pathLayer)
         
@@ -60,33 +60,33 @@ class Plot: UIView {
         self.setNeedsDisplay()
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         guard let context = UIGraphicsGetCurrentContext() else {
             return
         }
         
-        CGContextSetLineWidth(context, 1)///UIScreen.mainScreen().scale)
-        CGContextAddPath(context, self.newPathPart())
-        CGContextSetStrokeColorWithColor(context, self.lineColor.CGColor)
-        CGContextSetInterpolationQuality(context, .None);
-        CGContextSetAllowsAntialiasing(context, false);
-        CGContextSetShouldAntialias(context, false);
-        CGContextStrokePath(context)
+        context.setLineWidth(1)///UIScreen.mainScreen().scale)
+        context.addPath(self.newPathPart())
+        context.setStrokeColor(self.lineColor.cgColor)
+        context.interpolationQuality = .none
+        context.setAllowsAntialiasing(false)
+        context.setShouldAntialias(false)
+        context.strokePath()
     }
     
-    private func newPathPart() -> CGPathRef {
+    private func newPathPart() -> CGPath {
         
         let lineWidth: CGFloat = 1
         
         guard let dataSource = self.dataSource else {
-            return CGPathCreateMutable()
+            return CGMutablePath()
         }
         
         let currentCount = dataSource.pointsCount
         let sourceBounds = dataSource.dataSourceFrame.size
         
-        let mPath        = CGPathCreateMutable()
-        CGPathMoveToPoint(mPath, nil, 0, self.bounds.midY - lineWidth/2)
+        let mPath        = CGMutablePath()
+        mPath.move(to: CGPoint(x: 0,y: self.bounds.midY - lineWidth/2))
         
         let wProportion = self.bounds.size.width / sourceBounds.width
         let hPropostion = self.bounds.size.height / sourceBounds.height
@@ -97,14 +97,15 @@ class Plot: UIView {
                 x: point.x * wProportion,
                 y: point.y * hPropostion / 2.0)
             
-            CGPathAddLineToPoint(mPath, nil, adjustedPoint.x, self.bounds.midY)
-            CGPathAddLineToPoint(mPath, nil, adjustedPoint.x, self.bounds.midY - adjustedPoint.y)
-            CGPathAddLineToPoint(mPath, nil, adjustedPoint.x, self.bounds.midY + adjustedPoint.y)
-            CGPathAddLineToPoint(mPath, nil, adjustedPoint.x, self.bounds.midY)
+            mPath.addLine(to: CGPoint(x: adjustedPoint.x, y: self.bounds.midY))
+            mPath.addLine(to: CGPoint(x: adjustedPoint.x, y: self.bounds.midY - adjustedPoint.y))
+            mPath.addLine(to: CGPoint(x: adjustedPoint.x, y: self.bounds.midY + adjustedPoint.y))
+            mPath.addLine(to: CGPoint(x: adjustedPoint.x, y: self.bounds.midY))
+
         }
         
-        CGPathAddLineToPoint(mPath, nil, 0.0, self.bounds.midY)
-        CGPathCloseSubpath(mPath)
+        mPath.addLine(to: CGPoint(x: 0.0,y: self.bounds.midY))
+        mPath.closeSubpath()
         return mPath
     }
 }

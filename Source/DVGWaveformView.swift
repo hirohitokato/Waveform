@@ -29,7 +29,7 @@ class DVGWaveformController: NSObject {
     //MARK: -
     //MARK: - Configuration
     //MARK: - Internal configuration
-    func addPlotViewToContainerView(containerView: UIView) {
+    func addPlotViewToContainerView(_ containerView: UIView) {
         let diagram = DVGAudioWaveformDiagram()
         self.diagram = diagram
         self.diagram.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +51,7 @@ class DVGWaveformController: NSObject {
     }
     
     //MARK: - For external configuration
-    func waveformWithIdentifier(identifier: String) -> Plot? {
+    func waveformWithIdentifier(_ identifier: String) -> Plot? {
         return self.diagram.waveformDiagramView.plotWithIdentifier(identifier)
     }
 
@@ -65,7 +65,7 @@ class DVGWaveformController: NSObject {
 
     //MARK: -
     //MARK: - Reading
-    func readAndDrawSynchronously(completion: (ErrorType?) -> ()) {
+    func readAndDrawSynchronously(_ completion: @escaping (Error?) -> ()) {
         
         if self.samplesReader == nil {
             completion(NSError(domain: "",code: -1, userInfo: nil))
@@ -91,17 +91,17 @@ class DVGWaveformController: NSObject {
         }
     }
     
-    func addDataSource(dataSource: ChannelSource) {
+    func addDataSource(_ dataSource: ChannelSource) {
         channelSourceMapper.addChannelSource(dataSource)
     }
     
     //MARK: -
     //MARK: - Private vars
-    private var diagram: DVGAudioWaveformDiagram!
-    private var diagramViewModel = DVGAudioWaveformDiagramModel()
-    private var samplesReader: AudioSamplesReader!
-    private var waveformDataSource = ScalableChannelsContainer()
-    private var channelSourceMapper = ChannelSourceMapper()
+    fileprivate var diagram: DVGAudioWaveformDiagram!
+    fileprivate var diagramViewModel = DVGAudioWaveformDiagramModel()
+    fileprivate var samplesReader: AudioSamplesReader!
+    fileprivate var waveformDataSource = ScalableChannelsContainer()
+    fileprivate var channelSourceMapper = ChannelSourceMapper()
     
     //MARK: - Public vars
     weak var movementDelegate: DVGDiagramMovementsDelegate?
@@ -123,7 +123,7 @@ class DVGWaveformController: NSObject {
     var scale: CGFloat = 1.0
     
     @objc var playbackRelativePosition: NSNumber? {
-        get { return self._playbackRelativePosition }
+        get { return self._playbackRelativePosition as NSNumber? }
         set { self._playbackRelativePosition = newValue == nil ? nil : CGFloat(newValue!) }
     }
     
@@ -132,17 +132,17 @@ class DVGWaveformController: NSObject {
         set { self.diagram.playbackRelativePosition = newValue }
     }
     
-    var progress: NSProgress {
+    var progress: Progress {
         return self.samplesReader.progress
     }
 }
 
 ////MARK: - DiagramViewModelDelegate
 extension DVGWaveformController: DVGDiagramMovementsDelegate {
-    func diagramDidSelect(dataRange: DataRange) {
+    func diagramDidSelect(_ dataRange: DataRange) {
         self.movementDelegate?.diagramDidSelect(dataRange)
     }
-    func diagramMoved(scale scale: Double, start: Double) {
+    func diagramMoved(scale: Double, start: Double) {
         self.waveformDataSource.reset(DataRange(location: start, length: 1/scale))
         self.movementDelegate?.diagramMoved(scale: scale, start: start)
     }

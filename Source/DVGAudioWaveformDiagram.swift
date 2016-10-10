@@ -99,46 +99,46 @@ class DVGAudioWaveformDiagram: UIView {
     
     private var panStartLocation: CGFloat?
     
-    func handlePanToSelect(pan: UIPanGestureRecognizer) {
+    func handlePanToSelect(_ pan: UIPanGestureRecognizer) {
         switch pan.state {
-        case .Began:
+        case .began:
             if self.panStartLocation == nil {
-                self.panStartLocation = pan.locationInView(self).x
+                self.panStartLocation = pan.location(in: self).x
             }
-            self.configureSelectionFromPosition(panStartLocation!, toPosition: pan.locationInView(self).x)
-        case .Failed:
+            self.configureSelectionFromPosition(panStartLocation!, toPosition: pan.location(in: self).x)
+        case .failed:
             print("pan failed")
-        case .Ended:
+        case .ended:
             // notify delegate
             self.panStartLocation = nil
             if let selection = self.selection {
                 self.delegate?.diagramDidSelect(selection)
             }
             break
-        case .Changed:
-            self.configureSelectionFromPosition(panStartLocation!, toPosition: pan.locationInView(self).x)
+        case .changed:
+            self.configureSelectionFromPosition(panStartLocation!, toPosition: pan.location(in: self).x)
         default:
             break
         }
     }
     
-    func handleTapToSelect(tap: UILongPressGestureRecognizer) {
+    func handleTapToSelect(_ tap: UILongPressGestureRecognizer) {
         
         switch self.pinch.state {
-        case .Began, .Changed:
+        case .began, .changed:
             return
         default:
             break
         }
         
         switch tap.state {
-        case .Began:
-            self.panStartLocation = pan.locationInView(self).x
-            self.configureSelectionFromPosition(tap.locationInView(self).x)
-        case .Failed:
+        case .began:
+            self.panStartLocation = pan.location(in: self).x
+            self.configureSelectionFromPosition(_startPosition: tap.location(in: self).x)
+        case .failed:
             print("tap failed")
-        case .Ended:
-            self.configureSelectionFromPosition(tap.locationInView(self).x)
+        case .ended:
+            self.configureSelectionFromPosition(_startPosition: tap.location(in: self).x)
             if let selection = self.selection {
                 self.delegate?.diagramDidSelect(selection)
             }
@@ -146,7 +146,7 @@ class DVGAudioWaveformDiagram: UIView {
         }
     }
     
-    func handlePinch(gesture: UIPinchGestureRecognizer) {
+    func handlePinch(_ gesture: UIPinchGestureRecognizer) {
         self.selectionView.selection = nil
         
         let k = self.playbackRelativePosition
@@ -156,26 +156,26 @@ class DVGAudioWaveformDiagram: UIView {
         self.selection = l
         
         switch gesture.state {
-        case .Changed:
+        case .changed:
             let scale     = gesture.scale
-            let locationX = gesture.locationInView(gesture.view).x
+            let locationX = gesture.location(in: gesture.view).x
             let relativeLocation = locationX/gesture.view!.bounds.width
             self.delegate?.zoomAt(relativeLocation, relativeScale: scale)
             gesture.scale = 1.0
-        case .Ended:
+        case .ended:
             print(self.dataSource?.geometry )
         default:()
         }
     }
     
-    func handlePan(gesture: UIPanGestureRecognizer) {
+    func handlePan(_ gesture: UIPanGestureRecognizer) {
         self.selectionView.selection = nil
         switch gesture.state {
-        case .Changed:
-            let deltaX         = gesture.translationInView(gesture.view).x
+        case .changed:
+            let deltaX         = gesture.translation(in: gesture.view).x
             let relativeDeltaX = deltaX/gesture.view!.bounds.width
             self.delegate?.moveByDistance(relativeDeltaX)
-            gesture.setTranslation(.zero, inView: gesture.view)
+            gesture.setTranslation(.zero, in: gesture.view)
         default:()
         }
         
@@ -211,7 +211,7 @@ class DVGAudioWaveformDiagram: UIView {
         self.configureSelectionFromPosition(_startPosition, toPosition: _startPosition)
     }
     
-    func configureSelectionFromPosition(_startPosition: CGFloat, toPosition _endPosition: CGFloat) {
+    func configureSelectionFromPosition(_ _startPosition: CGFloat, toPosition _endPosition: CGFloat) {
 
         //TODO: move geometry logic to viewModel (create it first)
         var startPosition = min(_endPosition, _startPosition)
@@ -246,10 +246,10 @@ extension DVGAudioWaveformDiagram: UIGestureRecognizerDelegate {
         }
     }
     
-    override func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == self.panToSelect {
-            self.tapToSelect.enabled = false
-            self.tapToSelect.enabled = true
+            self.tapToSelect.isEnabled = false
+            self.tapToSelect.isEnabled = true
         }
         return true
     }

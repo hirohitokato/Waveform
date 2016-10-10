@@ -22,7 +22,7 @@ class Channel {
     public var blockSize = 1
     public var count: Int { return buffer.count }
     public var totalCount: Int = 0
-    lazy public var identifier: String = { return "\(self.logicProvider.dynamicType)" }()
+    lazy public var identifier: String = { return "\(type(of: self.logicProvider))" }()
     
     private var currentBlockSize = 0
     public var maxValue: Double { return buffer.maxValue }
@@ -31,11 +31,11 @@ class Channel {
 
     public subscript(index: Int) -> Double {
         get {
-            return buffer.valueAtIndex(index)
+            return buffer[index]
         }
     }
     
-    public func handleValue<U: NumberType>(value: U) {
+    public func handle<U: NumberType>(value: U) {
         if currentBlockSize == blockSize {
             self.clear()
             currentBlockSize = 0
@@ -44,8 +44,8 @@ class Channel {
         self.logicProvider.handleValue(value.double)
     }
     
-    func appendValueToBuffer(value: Double) {
-        buffer.appendValue(value)
+    func appendValueToBuffer(_ value: Double) {
+        buffer.append(value: value)
         onUpdate()
     }
     

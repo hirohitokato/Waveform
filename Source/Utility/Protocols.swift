@@ -14,29 +14,29 @@ protocol PlotDataSource: class {
     var pointsCount: Int { get }
     var needsRedraw: Bool { get set }
     func updateGeometry()
-    func pointAtIndex(index: Int) -> CGPoint
+    func pointAtIndex(_ index: Int) -> CGPoint
 }
 
 protocol DiagramDataSource: class {
     var geometry: DiagramGeometry { get }
     var onPlotUpdate: () -> () { get set }
     var plotDataSourcesCount: Int { get }
-    func plotDataSourceAtIndex(index: Int) -> PlotDataSource
+    func plotDataSourceAtIndex(_ index: Int) -> PlotDataSource
 }
 
 protocol DiagramDelegate: class {
-    func zoomAt(zoomAreaCenter: CGFloat, relativeScale: CGFloat)
-    func moveByDistance(relativeDeltaX: CGFloat)
+    func zoomAt(_ zoomAreaCenter: CGFloat, relativeScale: CGFloat)
+    func moveByDistance(_ relativeDeltaX: CGFloat)
 }
 
 protocol DVGDiagramDelegate: class, DiagramDelegate {
-    func diagramDidSelect(dataRange: DataRange)
+    func diagramDidSelect(_ dataRange: DataRange)
 }
 
 protocol ChannelSource: class {
     var channelsCount: Int { get }
     var onChannelsChanged: () -> () { get set }
-    func channelAtIndex(index: Int) -> Channel
+    func channelAtIndex(_ index: Int) -> Channel
 }
 
 protocol AbstractChannel: class, Identifiable {
@@ -47,13 +47,13 @@ protocol AbstractChannel: class, Identifiable {
     var minValue: Double { get }
     
     subscript(index: Int) -> Double { get }
-    func handleValue<U: NumberType>(value: U)
+    func handleValue<U: NumberType>(_ value: U)
 }
 
 protocol AudioSamplesHandler: class {
-    func willStartReadSamples(estimatedSampleCount estimatedSampleCount: Int)
+    func willStartReadSamples(estimatedSampleCount: Int)
     func didStopReadSamples(count: Int)
-    func handleSamples(samplesContainer: AudioSamplesContainer)
+    func handleSamples(_ samplesContainer: AudioSamplesContainer)
 }
 
 extension AudioSamplesHandler {

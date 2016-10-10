@@ -29,9 +29,9 @@ class AudioSamplesReader: NSObject {
     var nativeAudioFormat: AudioFormat?
     var samplesReadAudioFormat = Constants.DefaultAudioFormat
     
-    var progress = NSProgress()
+    var progress = Progress()
     
-    func readAudioFormat(completionBlock: (AudioFormat?, SamplesReaderError?) -> ()) {
+    func readAudioFormat(completionBlock: @escaping (AudioFormat?, SamplesReaderError?) -> ()) {
         dispatch_asynch_on_global_processing_queue {
             do {
                 self.nativeAudioFormat = try self.readAudioFormat()
@@ -50,17 +50,24 @@ class AudioSamplesReader: NSObject {
     
     func readAudioFormat() throws -> AudioFormat {
         
-        let formatDescription = try soundFormatDescription()
+        guard let formatDescription = try? soundFormatDescription() else {
+                throw SamplesReaderError.UnknownError(nil)
+        }
         
+#if DEBUG
         print("DEBUG Audio format description => \(formatDescription)")
-        let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription).memory
+#endif
+        guard let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription)?.pointee
+        else {
+            throw SamplesReaderError.UnknownError(nil)
+        }
         let format = AudioFormat(samplesRate: Int(asbd.mSampleRate), bitsDepth: Int(asbd.mBitsPerChannel), numberOfChannels: Int(asbd.mChannelsPerFrame))
         nativeAudioFormat = format
         return format
     }
     
     func assetAudioTrack() throws -> AVAssetTrack {
-        guard let sound = asset.tracksWithMediaType(AVMediaTypeAudio).first else {
+        guard let sound = asset.tracks(withMediaType: AVMediaTypeAudio).first else {
             throw SamplesReaderError.NoSound
         }
         return sound
@@ -73,24 +80,24 @@ class AudioSamplesReader: NSObject {
         return formatDescription as! CMAudioFormatDescription
     }
 
-    private func audioReadingSettingsForFormat(audioFormat: AudioFormat) -> [String: AnyObject] {
+    private func audioReadingSettings(forFormat audioFormat: AudioFormat) -> [String: AnyObject] {
         return [
-            AVFormatIDKey           : NSNumber(unsignedInt: kAudioFormatLinearPCM),
-            AVSampleRateKey         : audioFormat.samplesRate,
-            AVNumberOfChannelsKey   : audioFormat.numberOfChannels,
-            AVLinearPCMBitDepthKey  : audioFormat.bitsDepth > 0 ? audioFormat.bitsDepth : 16,
-            AVLinearPCMIsBigEndianKey   : false,
-            AVLinearPCMIsFloatKey       : false,
-            AVLinearPCMIsNonInterleaved : false
+            AVFormatIDKey           : NSNumber(value: kAudioFormatLinearPCM),
+            AVSampleRateKey         : audioFormat.samplesRate as AnyObject,
+            AVNumberOfChannelsKey   : audioFormat.numberOfChannels as AnyObject,
+            AVLinearPCMBitDepthKey  : (audioFormat.bitsDepth > 0 ? audioFormat.bitsDepth : 16) as AnyObject,
+            AVLinearPCMIsBigEndianKey   : false as AnyObject,
+            AVLinearPCMIsFloatKey       : false as AnyObject,
+            AVLinearPCMIsNonInterleaved : false as AnyObject
         ]
     }
 
-    func readSamples(audioFormat: AudioFormat? = nil, completion: (ErrorType?) -> ()) {
+    func readSamples(_ audioFormat: AudioFormat? = nil, completion: @escaping (Error?) -> ()) {
         dispatch_asynch_on_global_processing_queue({
             try self.readSamples(audioFormat) }, onCatch: completion)
     }
     
-    func readSamples(audioFormat: AudioFormat? = nil) throws {
+    func readSamples(_ audioFormat: AudioFormat? = nil) throws {
         if let format = audioFormat {
             samplesReadAudioFormat = format
         }
@@ -109,11 +116,11 @@ class AudioSamplesReader: NSObject {
             throw SamplesReaderError.UnknownError(error)
         }
     
-        let settings = audioReadingSettingsForFormat(samplesReadAudioFormat)
+        let settings = audioReadingSettings(forFormat: samplesReadAudioFormat)
         
         let readerOutput = AVAssetReaderTrackOutput(track: sound, outputSettings: settings)
         
-        assetReader.addOutput(readerOutput)
+        assetReader.add(readerOutput)
         assetReader.timeRange = CMTimeRange(start: kCMTimeZero, duration: asset.duration)
         
         if samplesHandler == nil {
@@ -139,13 +146,13 @@ final class SamplesReadingRoutine {
     let audioFormat: AudioFormat
     weak var samplesHandler: AudioSamplesHandler?
 
-    let progress: NSProgress
+    let progress: Progress
 
     lazy var estimatedSamplesCount: Int = {
         return Int(self.assetReader.asset.duration.seconds * Double(self.audioFormat.samplesRate))
     }()
     
-    init(assetReader: AVAssetReader, readerOutput: AVAssetReaderOutput, audioFormat: AudioFormat, samplesHandler: AudioSamplesHandler?, progress: NSProgress) {
+    init(assetReader: AVAssetReader, readerOutput: AVAssetReaderOutput, audioFormat: AudioFormat, samplesHandler: AudioSamplesHandler?, progress: Progress) {
         self.assetReader  = assetReader
         self.readerOutput = readerOutput
         self.audioFormat  = audioFormat
@@ -155,12 +162,12 @@ final class SamplesReadingRoutine {
     }
     
     var isReading: Bool {
-        return assetReader.status == .Reading
+        return assetReader.status == .reading
     }
     
     func startReading() throws  {
         if !assetReader.startReading() {
-            throw SamplesReaderError.CantReadSamples(assetReader.error)
+            throw SamplesReaderError.CantReadSamples(assetReader.error as NSError?)
         }
     }
 
@@ -182,7 +189,7 @@ final class SamplesReadingRoutine {
             }
         }
         try checkStatusOfAssetReaderOnComplete()
-        self.samplesHandler?.didStopReadSamples(Int(self.progress.completedUnitCount))
+        self.samplesHandler?.didStopReadSamples(count: Int(self.progress.completedUnitCount))
     }
     
     func readNextSamples() throws {
@@ -198,26 +205,29 @@ final class SamplesReadingRoutine {
         let length = CMBlockBufferGetDataLength(buffer)
         
         // Append new data
-        let tempBytes = UnsafeMutablePointer<Void>.alloc(length)
-        var returnedPointer: UnsafeMutablePointer<Int8> = nil
+        let tempBytes = UnsafeMutableRawPointer.allocate(bytes: length, alignedTo: 0)
+        var returnedPointer: UnsafeMutablePointer<Int8>?
     
         if CMBlockBufferAccessDataBytes(buffer, 0, length, tempBytes, &returnedPointer) != kCMBlockBufferNoErr {
             throw NoEnoughData()
         }
         
-        tempBytes.destroy(length)
-        tempBytes.dealloc(length)
+        tempBytes.deallocate(bytes: length, alignedTo: 0)
+        
+        guard (returnedPointer != nil) else {
+            throw SamplesReaderError.UnknownError(nil)
+        }
     
-        let samplesContainer = AudioSamplesContainer(buffer: returnedPointer, length: length, numberOfChannels: audioFormat.numberOfChannels)
+        let samplesContainer = AudioSamplesContainer(buffer: returnedPointer!, length: length, numberOfChannels: audioFormat.numberOfChannels)
         samplesHandler?.handleSamples(samplesContainer)
         progress.completedUnitCount += samplesContainer.samplesCount
     }
     
     func checkStatusOfAssetReaderOnComplete() throws {
         switch assetReader.status {
-        case .Unknown, .Failed, .Reading:
-            throw SamplesReaderError.UnknownError(assetReader.error)
-        case .Cancelled, .Completed:
+        case .unknown, .failed, .reading:
+            throw SamplesReaderError.UnknownError(assetReader.error as NSError?)
+        case .cancelled, .completed:
             return
         }
     }

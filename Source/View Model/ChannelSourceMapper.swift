@@ -11,7 +11,7 @@ import Foundation
 class ChannelSourceMapper: ChannelSource {
 
     var channelSources: [ChannelSource] = []
-    func addChannelSource(channelSource: ChannelSource) {
+    func addChannelSource(_ channelSource: ChannelSource) {
         channelSources.append(channelSource)
         channelSource.onChannelsChanged = { [weak self] in self?.onChannelsChanged() }
     }
@@ -21,7 +21,7 @@ class ChannelSourceMapper: ChannelSource {
     }
     
     var onChannelsChanged: () -> () = {_ in}
-    func channelAtIndex(index: Int) -> Channel {
+    func channelAtIndex(_ index: Int) -> Channel {
         var tmpIndex = index
         for channelSource in channelSources {
             if tmpIndex < channelSource.channelsCount {

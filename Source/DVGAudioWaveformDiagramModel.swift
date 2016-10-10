@@ -10,8 +10,8 @@ import Foundation
 import UIKit
 
 protocol DVGDiagramMovementsDelegate: class {
-    func diagramDidSelect(dataRange: DataRange)
-    func diagramMoved(scale scale: Double, start: Double)
+    func diagramDidSelect(_ dataRange: DataRange)
+    func diagramMoved(scale: Double, start: Double)
 }
 
 class DVGAudioWaveformDiagramModel: DiagramModel, DVGDiagramDelegate {
@@ -20,16 +20,16 @@ class DVGAudioWaveformDiagramModel: DiagramModel, DVGDiagramDelegate {
     
     var originalSelection: DataRange?
     
-    func diagramDidSelect(dataRange: DataRange) {
+    func diagramDidSelect(_ dataRange: DataRange) {
         self.originalSelection = dataRange
         self.movementsDelegate?.diagramDidSelect(dataRange)
     }
     
-    override func zoom(start start: CGFloat, scale: CGFloat) {
+    override func zoom(start: CGFloat, scale: CGFloat) {
         super.zoom(start: start, scale: scale)
         self.movementsDelegate?.diagramMoved(scale: self.geometry.scale, start: self.geometry.start)
     }
-    override func moveToPosition(start: CGFloat) {
+    override func moveToPosition(_ start: CGFloat) {
         super.moveToPosition(start)
         self.movementsDelegate?.diagramMoved(scale: self.geometry.scale, start: self.geometry.start)
     }

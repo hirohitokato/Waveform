@@ -60,7 +60,7 @@ class Diagram: UIView {
         self.containerView = containerView
     }
 
-    func adjustPlotsNumberWithCount(count: Int) {
+    func adjustPlotsNumberWithCount(_ count: Int) {
         if plots.count == count {
             return
         }
@@ -77,7 +77,7 @@ class Diagram: UIView {
         for index in count..<plots.count {
             let plot = plots[index]
             plot.removeFromSuperview()
-            plots.removeAtIndex(index)
+            plots.remove(at: index)
         }
     }
     
@@ -87,7 +87,7 @@ class Diagram: UIView {
 
 extension Diagram {
     
-    func addPlotWithDataSource(dataSource: PlotDataSource) -> Plot {
+    func addPlotWithDataSource(_ dataSource: PlotDataSource) -> Plot {
         
         let plot = Plot(frame: self.bounds)
         plot.dataSource = dataSource
@@ -102,7 +102,7 @@ extension Diagram {
         return plot
     }
     
-    func plotWithIdentifier(identifier: String) -> Plot? {
+    func plotWithIdentifier(_ identifier: String) -> Plot? {
         for plot in self.plots {
             if plot.identifier == identifier {
                 return plot
@@ -113,7 +113,7 @@ extension Diagram {
     
     func redraw() {
         for plot in self.plots {
-            if let dataSource = plot.dataSource where dataSource.needsRedraw {
+            if let dataSource = plot.dataSource , dataSource.needsRedraw {
                 plot.redraw()
                 dataSource.needsRedraw = false
             }
@@ -126,7 +126,7 @@ extension Diagram {
             self.displayLink = nil
         }
         let displayLink = CADisplayLink.init(target: self, selector: #selector(Diagram.redraw))
-        displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+        displayLink.add(to: RunLoop.current, forMode: .commonModes)
         self.displayLink = displayLink
     }
     

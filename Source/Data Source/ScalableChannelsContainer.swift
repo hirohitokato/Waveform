@@ -20,7 +20,7 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
     
     //MARK: -
     //MARK: - Inner configuration
-    func configure(neededSamplesCount neededSamplesCount: Int, estimatedSampleCount: Int) {
+    func configure(neededSamplesCount: Int, estimatedSampleCount: Int) {
         
         print("estimatedSampleCount ", estimatedSampleCount)
         
@@ -61,7 +61,7 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
     }
     
     
-    func reset(dataRange: DataRange) {
+    func reset(_ dataRange: DataRange) {
         assert(self.channels.count > 0, "you should configure channels first. see method above")
         
         let scale      = 1.0 / dataRange.length
@@ -73,7 +73,7 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
         }
     }
     
-    func willStartReadSamples(estimatedSampleCount estimatedSampleCount: Int) {
+    func willStartReadSamples(estimatedSampleCount: Int) {
         configure(neededSamplesCount: neededSamplesCount, estimatedSampleCount: estimatedSampleCount)
     }
     
@@ -83,7 +83,7 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
         }
     }
         
-    func handleSamples(samplesContainer: AudioSamplesContainer) {
+    func handleSamples(_ samplesContainer: AudioSamplesContainer) {
 
         for channelIndex in 0..<numberOfScaleLevels {
             
@@ -92,8 +92,8 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
             
             for sampleIndex in 0..<samplesContainer.samplesCount {
                 let sample = samplesContainer.sample(channelIndex: 0, sampleIndex: sampleIndex)
-                channel.handleValue(sample)
-                channel_.handleValue(sample)
+                channel.handle(value:sample)
+                channel_.handle(value: sample)
             }
         }
     }
@@ -119,7 +119,7 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
 
     var channelsCount: Int = 2
     
-    func channelAtIndex(index: Int) -> Channel {
+    func channelAtIndex(_ index: Int) -> Channel {
         return channels[index + scaleIndex * channelsCount]
     }
 }

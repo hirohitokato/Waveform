@@ -15,30 +15,30 @@ struct DiagramGeometry {
 }
 
 extension Double {
-    func convertToGeometry(geometry: DiagramGeometry) -> Double {
+    func convertToGeometry(_ geometry: DiagramGeometry) -> Double {
         return (self - geometry.start) * geometry.scale
     }
-    func convertFromGeometry(geometry: DiagramGeometry) -> Double {
+    func convertFromGeometry(_ geometry: DiagramGeometry) -> Double {
         return self/geometry.scale + geometry.start
     }
 }
 
 extension CGFloat {
-    func convertToGeometry(geometry: DiagramGeometry) -> CGFloat {
+    func convertToGeometry(_ geometry: DiagramGeometry) -> CGFloat {
         return CGFloat((Double(self) - geometry.start) * geometry.scale)
     }
-    func convertFromGeometry(geometry: DiagramGeometry) -> CGFloat {
+    func convertFromGeometry(_ geometry: DiagramGeometry) -> CGFloat {
         return CGFloat(Double(self)/geometry.scale + geometry.start)
     }
 }
 
 extension DataRange {
-    func convertToGeometry(geometry: DiagramGeometry) -> DataRange {
+    func convertToGeometry(_ geometry: DiagramGeometry) -> DataRange {
         let location = self.location.convertToGeometry(geometry)
         let length = self.length * geometry.scale
         return DataRange(location: location, length: length)
     }
-    func convertFromGeometry(geometry: DiagramGeometry) -> DataRange {
+    func convertFromGeometry(_ geometry: DiagramGeometry) -> DataRange {
         let location = self.location.convertFromGeometry(geometry)
         let length = self.length / geometry.scale
         return DataRange(location: location, length: length)

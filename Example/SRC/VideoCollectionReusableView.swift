@@ -49,7 +49,7 @@ class VideoCollectionReusableView: UICollectionReusableView {
             }
         }
         
-        let date = NSDateFormatter.localizedStringFromDate(collection.startDate!, dateStyle:.LongStyle, timeStyle:.NoStyle)
+        let date = DateFormatter.localizedString(from: collection.startDate!, dateStyle:.long, timeStyle:.none)
         
         if self.titleLabel.text != nil {
             self.dateLabel.text = date
@@ -76,30 +76,33 @@ class VideoCollectionReusableView: UICollectionReusableView {
     
         if (self.subtitleLabel.text?.characters.count == 0) {
     
-            self.titleLabel.frame = CGRectMake(horizontalBordersOffset,
-                                               titleLabelTopOffsetWithNoSubtitle,
-                                               CGRectGetWidth(self.bounds) - dateLabelWidth,
-                                               CGRectGetHeight(self.bounds) - titleLabelTopOffsetWithNoSubtitle)
+            self.titleLabel.frame = CGRect(origin: CGPoint(x: horizontalBordersOffset,
+                                                           y: titleLabelTopOffsetWithNoSubtitle ),
+                                             size: CGSize(width: self.bounds.width - dateLabelWidth,
+                                                        height: self.bounds.height - titleLabelTopOffsetWithNoSubtitle ))
             
-            self.dateLabel.frame  = CGRectMake(CGRectGetWidth(self.bounds) - dateLabelWidth - horizontalBordersOffset,
-                                               0 + titleLabelTopOffsetWithNoSubtitle,
-                                               dateLabelWidth,
-                                               CGRectGetHeight(self.bounds) - titleLabelTopOffsetWithNoSubtitle)
+            
+            
+            self.dateLabel.frame  = CGRect( origin: CGPoint(x: self.bounds.width - dateLabelWidth - horizontalBordersOffset,
+                                                            y: 0 + titleLabelTopOffsetWithNoSubtitle ),
+                                              size: CGSize(width: dateLabelWidth,
+                                                         height: self.bounds.height - titleLabelTopOffsetWithNoSubtitle ))
+            
         } else {
-            self.titleLabel.frame    = CGRectMake(horizontalBordersOffset,
-                                                  titleLabelTopOffset,
-                                                  CGRectGetWidth(self.bounds) - dateLabelWidth - 2 * horizontalBordersOffset,
-                                                  CGRectGetHeight(self.titleLabel.bounds))
+            self.titleLabel.frame    = CGRect( origin: CGPoint(x: horizontalBordersOffset,
+                                                               y: titleLabelTopOffset ),
+                                                 size: CGSize(width: self.bounds.width - dateLabelWidth - 2 * horizontalBordersOffset,
+                                                            height: self.titleLabel.bounds.height ))
             
-            self.subtitleLabel.frame = CGRectMake(horizontalBordersOffset,
-                                                  CGRectGetHeight(self.bounds) - subtitleLabelBottomOffset - CGRectGetHeight(self.subtitleLabel.bounds),
-                                                  CGRectGetWidth(self.bounds) - dateLabelWidth - 2 * horizontalBordersOffset,
-                                                  CGRectGetHeight(self.subtitleLabel.bounds))
+            self.subtitleLabel.frame = CGRect( origin: CGPoint(x: horizontalBordersOffset,
+                                                               y: self.bounds.height - subtitleLabelBottomOffset - self.subtitleLabel.bounds.height ),
+                                                 size: CGSize(width: self.bounds.width - dateLabelWidth - 2 * horizontalBordersOffset,
+                                                               height: self.subtitleLabel.bounds.height))
             
-            self.dateLabel.frame     = CGRectMake(CGRectGetWidth(self.bounds) - dateLabelWidth - horizontalBordersOffset,
-                                                  titleLabelTopOffset,
-                                                  dateLabelWidth,
-                                                  CGRectGetHeight(self.dateLabel.bounds) )
+            self.dateLabel.frame     = CGRect( origin: CGPoint(x: self.bounds.width - dateLabelWidth - horizontalBordersOffset,
+                                                               y: titleLabelTopOffset ),
+                                                  size: CGSize(width:  dateLabelWidth,
+                                                               height: self.dateLabel.bounds.height ))
         }
     }
 }

@@ -25,15 +25,15 @@ class SelectionView: UIView {
     
     func setup() {
         self.setupSelectionLayer()
-        self.backgroundColor = .clearColor()
+        self.backgroundColor = .clear
     }
     
     func setupSelectionLayer() {
         let layer             = CALayer()
-        layer.borderColor     = UIColor.grayColor().CGColor
+        layer.borderColor     = UIColor.gray.cgColor
         layer.cornerRadius    = 5.0
         layer.borderWidth     = 2.0
-        layer.backgroundColor = UIColor.clearColor().CGColor
+        layer.backgroundColor = UIColor.clear.cgColor
         self.layer.addSublayer(layer)
         self.selectionLayer   = layer
     }
@@ -47,12 +47,12 @@ class SelectionView: UIView {
         didSet{ self.layoutSelection(selection) }
     }
     
-    func layoutSelection(dataRange: DataRange?) {
+    func layoutSelection(_ dataRange: DataRange?) {
         guard let dataRange = dataRange else {
-            self.selectionLayer.borderColor = UIColor.clearColor().CGColor
+            self.selectionLayer.borderColor = UIColor.clear.cgColor
             return
         }
-        self.selectionLayer.borderColor = UIColor.grayColor().CGColor
+        self.selectionLayer.borderColor = UIColor.gray.cgColor
         
         let startLocation  = self.bounds.width * CGFloat(dataRange.location)
         let selectionWidth = self.bounds.width * CGFloat(dataRange.length)

@@ -27,15 +27,15 @@ class ViewController: UIViewController, DVGDiagramMovementsDelegate {
             let options = PHContentEditingInputRequestOptions()
             options.canHandleAdjustmentData = {_ in return false}
             
-            phAsset.requestContentEditingInputWithOptions(options) { contentEditingInput, info in
+            phAsset.requestContentEditingInput(with: options) { contentEditingInput, info in
                 print(contentEditingInput, info)
-                dispatch_async(dispatch_get_main_queue()) { 
+                DispatchQueue.main.async {
                     if let asset = contentEditingInput?.avAsset {
                         self.waveform.asset = asset
                         self.configureWaveform()
                     } else {
                         print(info[PHContentEditingInputResultIsInCloudKey])
-                        if let value = info[PHContentEditingInputResultIsInCloudKey] as? Int where value == 1 {
+                        if let value = info[PHContentEditingInputResultIsInCloudKey] as? Int, value == 1 {
                             self.showAlert("Load video from iCloud first")
                         } else {
                             self.showAlert("Can't get audio from this video.")
@@ -46,27 +46,27 @@ class ViewController: UIViewController, DVGDiagramMovementsDelegate {
         }
     }
     
-    func showAlert(message: String) {
-        let alert = UIAlertController(title: nil, message: message, preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
-        self.presentViewController(alert, animated: true, completion: nil)
+    func showAlert(_ message: String) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
     
     func configureWaveform() {
         self.waveform.movementDelegate = self
         let waveform1 = self.waveform.maxValuesWaveform()
-        waveform1?.lineColor = UIColor.redColor()
+        waveform1?.lineColor = UIColor.red
         
         let waveform2 = self.waveform.avgValuesWaveform()
-        waveform2?.lineColor = UIColor.greenColor()
+        waveform2?.lineColor = UIColor.green
         self.waveform.numberOfPointsOnThePlot = 2000
     }
     
-    func diagramDidSelect(dataRange: DataRange) {
+    func diagramDidSelect(_ dataRange: DataRange) {
         print("\(#function), dataRange: \(dataRange)")
     }
     
-    func diagramMoved(scale scale: Double, start: Double) {
+    func diagramMoved(scale: Double, start: Double) {
         print("\(#function), scale: \(scale), start: \(start)")
     }
     

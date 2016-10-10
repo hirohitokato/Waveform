@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum SamplesReaderError: ErrorType {
+enum SamplesReaderError: Error {
     case NoSound
     case InvalidAudioFormat
     case CantReadSamples(NSError?)
@@ -16,5 +16,5 @@ enum SamplesReaderError: ErrorType {
     case SampleReaderNotReady
 }
 
-struct NoMoreSampleBuffersAvailable: ErrorType {}
-struct NoEnoughData: ErrorType {}
+struct NoMoreSampleBuffersAvailable: Error {}
+struct NoEnoughData: Error {}

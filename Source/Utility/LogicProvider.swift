@@ -11,7 +11,7 @@ import Foundation
 public
 class LogicProvider {
     weak internal var channel: Channel?
-    public func handleValue(value: Double) {}
+    public func handleValue(_ value: Double) {}
     public func clear() {}
 }
 
@@ -21,7 +21,7 @@ class MaxValueLogicProvider: LogicProvider {
     private var max: Double?
     public override init(){}
     
-    public override func handleValue(value: Double) {
+    public override func handleValue(_ value: Double) {
         if max == nil {
             max = value
         } else if value > max! {
@@ -42,7 +42,7 @@ class AverageValueLogicProvider: LogicProvider {
     var count = 0
     public override init(){}
     
-    public override func handleValue(value: Double) {
+    public override func handleValue(_ value: Double) {
         summ = summ + value
         count += 1
     }
@@ -61,7 +61,7 @@ class AudioMaxValueLogicProvider: LogicProvider {
     private var max = Double(Int16.min)//-40.0
     public override init(){}
     
-    public override func handleValue(value: Double) {
+    public override func handleValue(_ value: Double) {
         let value = abs(value)
         if value > max {
             max = value
@@ -81,7 +81,7 @@ class AudioAverageValueLogicProvider: LogicProvider {
     var count = 0
     public override init(){}
     
-    public override func handleValue(value: Double) {
+    public override func handleValue(_ value: Double) {
         summ = summ + abs(value)
         count += 1
     }

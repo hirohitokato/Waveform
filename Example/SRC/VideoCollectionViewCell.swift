@@ -20,29 +20,29 @@ class VideoCollectionViewCell: UICollectionViewCell {
             guard let videoSource = videoSource else {
                 return
             }
-            self.timeLabel.text = self.stringWithTime(videoSource.duration)
+            self.timeLabel.text = self.stringWithTime(time: videoSource.duration)
             self.timeLabelContainer.layer.cornerRadius = self.timeLabelContainer.bounds.size.height/2;
             
         
-            imageManager.requestImageForAsset(videoSource, targetSize:self.bounds.size, contentMode:.AspectFill, options:nil, resultHandler: {result, _ in
+            imageManager.requestImage(for: videoSource, targetSize:self.bounds.size, contentMode:.aspectFill, options:nil, resultHandler: {result, _ in
                     self.imageView.image = result;
             })
         }
     }
     
-    func stringWithTime(time:NSTimeInterval) -> String {
-        var seconds = time;
+    func stringWithTime(time:TimeInterval) -> String {
+        var seconds = time.int;
         var minutes = seconds/60;
         seconds = seconds%60;
         let hours = minutes/60;
         minutes = minutes%60;
         
         if hours > 0 {
-            return String(format: "%d:%02d:%02d", Int(hours), Int(minutes), Int(seconds));
+            return String(format: "%d:%d:%d", hours, minutes, seconds);
         } else if minutes > 0 {
-            return String(format:"%d:%02d", Int(minutes), Int(seconds));
+            return String(format:"%d:%d", minutes, seconds);
         } else {
-            return String(format:"0:%02d", Int(seconds));
+            return String(format:"0:%d", seconds);
         }
     }
 }

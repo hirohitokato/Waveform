@@ -14,70 +14,82 @@ class Buffer {
     var maxValue = -Double.infinity
     var minValue = Double.infinity
     var count = 0
-    var buffer: UnsafeMutablePointer<Void> = nil
-    var _buffer: UnsafeMutablePointer<DefaultNumberType> = nil
-    private var space = 0
+    var buffer: UnsafeMutableRawPointer?
+    var _buffer: UnsafeMutablePointer<DefaultNumberType>?
+    fileprivate var space = 0
 
-    func appendValue(value: Double) {
+    func append(value: Double) {
         if maxValue < value { maxValue = value }
         if minValue > value { minValue = value }
         
         if space == count {
             let newSpace = max(space * 2, 16)
-            self.moveSpaceTo(newSpace)
-            _buffer = UnsafeMutablePointer<DefaultNumberType>(buffer)
+            self.moveSpace(to: newSpace)
+            _buffer = UnsafeMutablePointer<DefaultNumberType>(buffer?.assumingMemoryBound(to: DefaultNumberType.self))
         }
-        (UnsafeMutablePointer<DefaultNumberType>(buffer) + count).initialize(value)
+        (UnsafeMutablePointer<DefaultNumberType>((buffer?.assumingMemoryBound(to: DefaultNumberType.self))!) + count).initialize(to: value)
         count += 1
     }
-    private
-    func moveSpaceTo(newSpace: Int) {
-        let newPtr = UnsafeMutablePointer<DefaultNumberType>.alloc(newSpace)
+    fileprivate
+    func moveSpace(to newSpace: Int) {
+        let newPtr = UnsafeMutablePointer<DefaultNumberType>.allocate(capacity: newSpace)
         
-        newPtr.moveInitializeFrom(UnsafeMutablePointer<DefaultNumberType>(buffer), count: count)
+        newPtr.moveInitialize(from: UnsafeMutablePointer<DefaultNumberType>((buffer?.assumingMemoryBound(to: DefaultNumberType.self))!), count: count)
         
-        buffer.dealloc(count)
+        buffer?.deallocate(bytes: count, alignedTo: 0)
         
-        buffer = UnsafeMutablePointer<Void>(newPtr)
+        buffer = UnsafeMutableRawPointer(newPtr)
         space = newSpace
     }
-    func valueAtIndex(index: Int) -> Double {
-        return _buffer[index]
+    
+    subscript(index: Int) -> Double {
+        return _buffer?[index] ?? Double.infinity
+    }
+    
+    func value(atIndex index: Int) -> Double {
+        return _buffer?[index] ?? Double.infinity
     }
 }
 
 final
 class GenericBuffer<T: NumberType>: Buffer {
-    var __buffer: UnsafeMutablePointer<T> = nil
+    var __buffer: UnsafeMutablePointer<T>?
 
-    override final func appendValue(value: Double) {
+    override final func append(value: Double) {
+        
+        guard (__buffer != nil) else {return}
 
         if maxValue < value { maxValue = value }
         if minValue > value { minValue = value }
         
         if space == count {
             let newSpace = max(space * 2, 16)
-            self.moveSpaceTo(newSpace)
+            self.moveSpace(to: newSpace)
         }
-        (__buffer + count).initialize(T(value))
+        (__buffer! + count).initialize(to: T(value))
         count += 1
     }
     
-    override final func moveSpaceTo(newSpace: Int) {
-        let newPtr = UnsafeMutablePointer<T>.alloc(newSpace)
+    override final func moveSpace(to newSpace: Int) {
         
-        newPtr.moveInitializeFrom(__buffer, count: count)
+        guard (__buffer != nil) else {return}
         
-        __buffer.dealloc(count)
+        let newPtr = UnsafeMutablePointer<T>.allocate(capacity: newSpace)
+        
+        newPtr.moveInitialize(from: __buffer!, count: count)
+        
+        __buffer!.deallocate(capacity: count)
         
         __buffer = newPtr
         space = newSpace
     }
-    override final func valueAtIndex(index: Int) -> Double {
-        return __buffer[index].double
+    
+    override subscript(index: Int) -> Double {
+        return __buffer?[index].double ?? Double.infinity
     }
+    
     deinit {
-        __buffer.destroy(space)
-        __buffer.dealloc(space)
+        __buffer?.deinitialize(count: space)
+        __buffer?.deallocate(capacity: space)
     }
 }
