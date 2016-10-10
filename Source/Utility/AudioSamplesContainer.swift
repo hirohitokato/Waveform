@@ -14,9 +14,8 @@ struct AudioSamplesContainer {
     let numberOfChannels: Int
     
     init<T>(buffer: UnsafePointer<T>, length: Int, numberOfChannels: Int) {
-        
-        let data              = NSData(bytes: buffer, length: length)
-        self.buffer           = data.bytes.assumingMemoryBound(to: Int16.self)
+
+        self.buffer           = UnsafeRawPointer(buffer).assumingMemoryBound(to: Int16.self)
         self.samplesCount     = length * MemoryLayout<T>.size/MemoryLayout<Int16>.size / numberOfChannels
         self.numberOfChannels = numberOfChannels
     }
