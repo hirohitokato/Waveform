@@ -14,6 +14,7 @@ class Channel: NSObject {
     
     let logicProvider: LogicProvider
     let buffer: Buffer
+    let semaphore = DispatchSemaphore.init(value: 1)
     public init(logicProvider: LogicProvider, buffer: Buffer = GenericBuffer<Int>()) {
         self.logicProvider = logicProvider
         self.buffer = buffer
@@ -33,7 +34,10 @@ class Channel: NSObject {
 
     public subscript(index: Int) -> Double {
         get {
-            return buffer[index]
+            semaphore.wait()
+            let result = buffer[index]
+            semaphore.signal()
+            return result
         }
     }
     
@@ -47,7 +51,9 @@ class Channel: NSObject {
     }
     
     func appendValueToBuffer(_ value: Double) {
+        semaphore.wait()
         buffer.append(value: value)
+        semaphore.signal()
         onUpdate()
     }
     
