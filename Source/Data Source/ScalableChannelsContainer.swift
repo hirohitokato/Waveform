@@ -129,21 +129,14 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
 
 //MARK: -
 //MARK: - Utility
-@objc
 public
 final
-class DataRange: NSObject {
+class DataRange {
     let location: Double
     let length: Double
     
-    init(location: Double, length: Double) {        
+    init(location: Double = 0.0, length: Double = 1.0) {
         self.location = location
         self.length   = length
-    }
-    
-    override init() {
-        self.location = 0.0
-        self.length   = 1.0
-        super.init()
     }
 }

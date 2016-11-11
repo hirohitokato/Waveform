@@ -9,7 +9,6 @@
 import Foundation
 import UIKit
 
-@objc
 protocol DVGDiagramMovementsDelegate: class {
     func diagramDidSelect(_ dataRange: DataRange)
     func diagramMoved(scale: Double, start: Double)
