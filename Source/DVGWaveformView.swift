@@ -130,6 +130,7 @@ class DVGWaveformController: NSObject {
                 self.samplesReader = AudioSamplesReader(asset: asset)
                 self.configure()
                 self.samplesReader?.samplesHandler = waveformDataSource
+                diagramViewModel.maxScale = asset.duration.seconds
             }
         }
     }

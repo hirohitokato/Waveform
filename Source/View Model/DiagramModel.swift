@@ -13,6 +13,8 @@ import UIKit
 public
 class DiagramModel: NSObject, DiagramDataSource {
     
+    var maxScale = 100.0
+    
     weak var channelsSource: ChannelSource? {
         didSet{
             channelsSource?.onChannelsChanged = {
@@ -103,7 +105,7 @@ extension DiagramModel: DiagramDelegate {
     }
     
     public func zoomAt(_ zoomAreaCenter: CGFloat, relativeScale: CGFloat) {
-        let newScale = max(1.0, relativeScale * CGFloat(self.geometry.scale))
+        let newScale =  min( max(1.0, relativeScale * CGFloat(self.geometry.scale)), CGFloat(maxScale))
         var start    = CGFloat(self.geometry.start) + zoomAreaCenter * (1/CGFloat(self.geometry.scale) - 1/newScale)
         start        = max(0, min(start, 1 - 1/newScale))
         self.zoom(start: start, scale: newScale)
