@@ -15,5 +15,5 @@ Pod::Spec.new do |s|
     s.source                = { :git => "https://github.com/denivip/Waveform.git", :tag => "0.0.2" }
     s.source_files          = "Source/**/*.{swift}"
     s.frameworks            = "Foundation", "UIKit", "AVFoundation", "CoreMedia"
-    s.resources             = "Resources/**/*.pdf"
+    s.resources             = "Resources/*.pdf"
 end
