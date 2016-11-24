@@ -16,7 +16,7 @@ class PlaybackPositionView: UIView {
     init() {
         super.init(frame: .zero)
         self.isOpaque = false
-        cursor.frame = CGRect(x: 0, y: 0, width: cursor.image!.size.width, height: cursor.image!.size.height);
+        cursor.frame = CGRect(x: 0, y: 0, width: cursor.image!.size.width/2.0, height: cursor.image!.size.height/2.0);
         cursor.isHidden = true
         addSubview(cursor)
     }
