@@ -11,7 +11,7 @@ import UIKit
 public
 class PlaybackPositionView: UIView {
     
-    let cursor = UIImageView(image: UIImage(named: "icon-button-play-slider"))
+    let cursor = UIImageView(image: UIImage(named: "waweform-icon-button-play-slider"))
     
     init() {
         super.init(frame: .zero)

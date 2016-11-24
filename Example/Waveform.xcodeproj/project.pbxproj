@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		27FC62211DE7366A00D08082 /* waweform-icon-button-play-slider.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 27FC62201DE7366A00D08082 /* waweform-icon-button-play-slider.pdf */; };
 		8BD39F7C1CC5648B005E8947 /* AudioSamplesReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD39F621CC5648B005E8947 /* AudioSamplesReader.swift */; };
 		8BD39F7D1CC5648B005E8947 /* ScalableChannelsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD39F631CC5648B005E8947 /* ScalableChannelsContainer.swift */; };
 		8BD39F7E1CC5648B005E8947 /* DVGAudioWaveformDiagram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD39F641CC5648B005E8947 /* DVGAudioWaveformDiagram.swift */; };
@@ -42,6 +43,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		27FC62201DE7366A00D08082 /* waweform-icon-button-play-slider.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "waweform-icon-button-play-slider.pdf"; sourceTree = "<group>"; };
 		8B3F34EE1C243BA6006A4B67 /* Waveform.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Waveform.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BD39F621CC5648B005E8947 /* AudioSamplesReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioSamplesReader.swift; sourceTree = "<group>"; };
 		8BD39F631CC5648B005E8947 /* ScalableChannelsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScalableChannelsContainer.swift; sourceTree = "<group>"; };
@@ -89,11 +91,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		27FC621B1DE732FE00D08082 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				27FC62201DE7366A00D08082 /* waweform-icon-button-play-slider.pdf */,
+			);
+			name = Resources;
+			path = ../Source;
+			sourceTree = "<group>";
+		};
 		8B3F34E51C243BA6006A4B67 = {
 			isa = PBXGroup;
 			children = (
+				27FC621B1DE732FE00D08082 /* Resources */,
 				8BD39F601CC5648B005E8947 /* Source */,
-				8BD39ED91CC559FA005E8947 /* Waveform */,
 				8B3F34EF1C243BA6006A4B67 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -119,12 +130,14 @@
 				8BD39F9E1CC565E9005E8947 /* ViewController.swift */,
 				8BD39F9F1CC565E9005E8947 /* Waveform-Bridging-Header.h */,
 			);
-			path = Waveform;
+			name = Waveform;
+			path = ../Example/Waveform;
 			sourceTree = "<group>";
 		};
 		8BD39F601CC5648B005E8947 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				8BD39ED91CC559FA005E8947 /* Waveform */,
 				8BD39F611CC5648B005E8947 /* Data Source */,
 				8BD39F641CC5648B005E8947 /* DVGAudioWaveformDiagram.swift */,
 				8BD39F651CC5648B005E8947 /* DVGAudioWaveformDiagramModel.swift */,
@@ -255,6 +268,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27FC62211DE7366A00D08082 /* waweform-icon-button-play-slider.pdf in Resources */,
 				8BD39FA41CC565E9005E8947 /* Info.plist in Resources */,
 				8BD39FA31CC565E9005E8947 /* Main.storyboard in Resources */,
 				8BD39FA11CC565E9005E8947 /* Assets.xcassets in Resources */,
