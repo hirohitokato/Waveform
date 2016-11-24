@@ -28,7 +28,8 @@ class PlaybackPositionView: UIView {
     
     func positionCursor(){
         guard let relativePosition = self.position,
-            relativePosition < 0 || relativePosition > 1
+            relativePosition >= 0,
+            relativePosition <= 1
         else {
             cursor.isHidden = true
             return
