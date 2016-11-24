@@ -11,9 +11,14 @@ import UIKit
 public
 class PlaybackPositionView: UIView {
     
+    let cursor = UIImageView(image: UIImage(named: "icon-button-play-slider"))
+    
     init() {
         super.init(frame: .zero)
         self.isOpaque = false
+        cursor.frame = CGRect(x: 0, y: 0, width: cursor.image!.size.width, height: cursor.image!.size.height);
+        cursor.isHidden = true
+        addSubview(cursor)
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -21,42 +26,28 @@ class PlaybackPositionView: UIView {
         self.isOpaque = false
     }
     
-    override public func draw(_ rect: CGRect) {
-        super.draw(rect)
-        guard let relativePosition = self.position else {
+    func positionCursor(){
+        guard let relativePosition = self.position,
+            relativePosition < 0 || relativePosition > 1
+        else {
+            cursor.isHidden = true
             return
         }
         
-        if relativePosition < 0 || relativePosition > 1 {
-            return
-        }
+        cursor.isHidden = false
         
         let position = (self.bounds.width - lineWidth) * relativePosition + lineWidth/2
         
-        guard let context = UIGraphicsGetCurrentContext() else {
-            fatalError("No context")
-        }
+        cursor.center = CGPoint(x: position, y: center.y)
         
-        context.setStrokeColor(self.lineColor.cgColor)
-        context.setLineWidth(lineWidth)
-        
-        
-        
-        let cursor = CGMutablePath()
-        
-        cursor.move(to: CGPoint(x:position,y:0))
-        cursor.addLine(to: CGPoint(x:position,y:self.bounds.height))
-        context.addPath(cursor)
-        
-        context.strokePath()
-        
+        self.setNeedsLayout()
     }
     
     /// Value from 0 to 1
     /// Setting value causes setNeedsDisplay method call
     /// Setting nil causes removing cursor
     var position: CGFloat? {
-        didSet { self.setNeedsDisplay() }
+        didSet { self.positionCursor() }
     }
     var lineColor = UIColor.white
     var lineWidth: CGFloat = 2.0
