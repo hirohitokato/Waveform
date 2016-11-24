@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27FC62281DE7626400D08082 /* icon-button-play-slider.png in Resources */ = {isa = PBXBuildFile; fileRef = 27FC62261DE7626400D08082 /* icon-button-play-slider.png */; };
-		27FC62291DE7626400D08082 /* icon-button-selection.png in Resources */ = {isa = PBXBuildFile; fileRef = 27FC62271DE7626400D08082 /* icon-button-selection.png */; };
+		27FC62281DE7626400D08082 /* waweform-icon-button-play-slider.png in Resources */ = {isa = PBXBuildFile; fileRef = 27FC62261DE7626400D08082 /* waweform-icon-button-play-slider.png */; };
+		27FC62291DE7626400D08082 /* waweform-icon-button-selection.png in Resources */ = {isa = PBXBuildFile; fileRef = 27FC62271DE7626400D08082 /* waweform-icon-button-selection.png */; };
 		8BD39F7C1CC5648B005E8947 /* AudioSamplesReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD39F621CC5648B005E8947 /* AudioSamplesReader.swift */; };
 		8BD39F7D1CC5648B005E8947 /* ScalableChannelsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD39F631CC5648B005E8947 /* ScalableChannelsContainer.swift */; };
 		8BD39F7E1CC5648B005E8947 /* DVGAudioWaveformDiagram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD39F641CC5648B005E8947 /* DVGAudioWaveformDiagram.swift */; };
@@ -44,8 +44,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		27FC62261DE7626400D08082 /* icon-button-play-slider.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-button-play-slider.png"; sourceTree = "<group>"; };
-		27FC62271DE7626400D08082 /* icon-button-selection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-button-selection.png"; sourceTree = "<group>"; };
+		27FC62261DE7626400D08082 /* waweform-icon-button-play-slider.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "waweform-icon-button-play-slider.png"; sourceTree = "<group>"; };
+		27FC62271DE7626400D08082 /* waweform-icon-button-selection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "waweform-icon-button-selection.png"; sourceTree = "<group>"; };
 		8B3F34EE1C243BA6006A4B67 /* Waveform.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Waveform.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BD39F621CC5648B005E8947 /* AudioSamplesReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioSamplesReader.swift; sourceTree = "<group>"; };
 		8BD39F631CC5648B005E8947 /* ScalableChannelsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScalableChannelsContainer.swift; sourceTree = "<group>"; };
@@ -96,8 +96,8 @@
 		27FC621B1DE732FE00D08082 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				27FC62261DE7626400D08082 /* icon-button-play-slider.png */,
-				27FC62271DE7626400D08082 /* icon-button-selection.png */,
+				27FC62261DE7626400D08082 /* waweform-icon-button-play-slider.png */,
+				27FC62271DE7626400D08082 /* waweform-icon-button-selection.png */,
 			);
 			name = Resources;
 			path = ../Source;
@@ -274,9 +274,9 @@
 				8BD39FA41CC565E9005E8947 /* Info.plist in Resources */,
 				8BD39FA31CC565E9005E8947 /* Main.storyboard in Resources */,
 				8BD39FA11CC565E9005E8947 /* Assets.xcassets in Resources */,
-				27FC62291DE7626400D08082 /* icon-button-selection.png in Resources */,
+				27FC62291DE7626400D08082 /* waweform-icon-button-selection.png in Resources */,
 				8BD39FA21CC565E9005E8947 /* LaunchScreen.storyboard in Resources */,
-				27FC62281DE7626400D08082 /* icon-button-play-slider.png in Resources */,
+				27FC62281DE7626400D08082 /* waweform-icon-button-play-slider.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
