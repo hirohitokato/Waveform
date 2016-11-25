@@ -12,6 +12,7 @@ import UIKit
 public
 class DVGAudioWaveformDiagram: UIView {
     
+    //MARK: - Properties
     var panToSelect: UIPanGestureRecognizer!
     var tapToSelect: UILongPressGestureRecognizer!
     var pan: UIPanGestureRecognizer!
@@ -32,6 +33,7 @@ class DVGAudioWaveformDiagram: UIView {
         }
     }
     
+    //MARK: - Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.setup()
@@ -99,6 +101,8 @@ class DVGAudioWaveformDiagram: UIView {
         self.playbackPositionView = playbackPositionView
     }
     
+    
+    //MARK: - Gestures
     private var panStartLocation: CGFloat?
     
     func handlePanToSelect(_ pan: UIPanGestureRecognizer) {
@@ -148,6 +152,8 @@ class DVGAudioWaveformDiagram: UIView {
         }
     }
     
+    
+    
     func handlePinch(_ gesture: UIPinchGestureRecognizer) {
         self.selectionView.selection = nil
         
@@ -170,6 +176,8 @@ class DVGAudioWaveformDiagram: UIView {
         }
     }
     
+    
+    
     func handlePan(_ gesture: UIPanGestureRecognizer) {
         self.selectionView.selection = nil
         switch gesture.state {
@@ -187,6 +195,8 @@ class DVGAudioWaveformDiagram: UIView {
         let l = self.selection
         self.selection = l
     }
+    
+    
     
     var minSelectionWidth: CGFloat = 40.0
     var playbackRelativePosition: CGFloat? = nil {

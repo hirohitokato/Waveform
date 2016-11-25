@@ -128,7 +128,7 @@ class ScalableChannelsContainer: NSObject, ChannelSource, AudioSamplesHandler {
 }
 
 //MARK: -
-//MARK: - Utility
+//MARK: - Utility. Data Range.
 @objc
 public
 final
