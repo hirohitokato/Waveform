@@ -14,7 +14,6 @@ class DVGAudioWaveformDiagram: UIView {
     
     //MARK: - Properties
     var panToSelect: UIPanGestureRecognizer!
-    var tapToSelect: UILongPressGestureRecognizer!
     var pan: UIPanGestureRecognizer!
     var pinch: UIPinchGestureRecognizer!
     
@@ -66,13 +65,6 @@ class DVGAudioWaveformDiagram: UIView {
         self.addGestureRecognizer(panToSelect)
         self.panToSelect                   = panToSelect
         panToSelect.maximumNumberOfTouches = 1
-        
-        let tap                     = UILongPressGestureRecognizer(target: self, action: #selector(DVGAudioWaveformDiagram.handleTapToSelect(_:)))
-        tap.delegate                = self
-        tap.minimumPressDuration    = 0.08
-        self.addGestureRecognizer(tap)
-        self.tapToSelect            = tap
-        tap.numberOfTouchesRequired = 1
 
         let pinch                   = UIPinchGestureRecognizer(target: self, action: #selector(DVGAudioWaveformDiagram.handlePinch(_:)))
         pinch.delegate              = self
@@ -104,14 +96,70 @@ class DVGAudioWaveformDiagram: UIView {
     
     //MARK: - Gestures
     private var panStartLocation: CGFloat?
+    private var panStartVelocityX: CGFloat?
+
+    private var selectionUI : DataRange? {
+        if selection == nil {
+            return nil
+        }
+        
+        return DataRange(location: selection!.location * bounds.width.double ,
+                           length: selection!.length * bounds.width.double)
+    }
+    private var startSelection: DataRange?
+    
+    enum PanAction {
+        case moving, moveLeftSlider, moveRightSlider, selectNewArea
+    }
+    private var action: PanAction?
+
     
     func handlePanToSelect(_ pan: UIPanGestureRecognizer) {
+        
         switch pan.state {
         case .began:
+            
             if self.panStartLocation == nil {
                 self.panStartLocation = pan.location(in: self).x
+                self.panStartVelocityX = pan.velocity(in: self).x
             }
-            self.configureSelectionFromPosition(panStartLocation!, toPosition: pan.location(in: self).x)
+            
+            if (selectionUI == nil){
+                self.configureSelectionFromPosition(panStartLocation!,
+                                                    toPosition: pan.location(in: self).x,
+                                                    anchor: panStartVelocityX!.double < 0.0 ? .right : .left )
+                action = .selectNewArea
+            } else if selectionUI!.length > minSelectionWidth.double {
+                
+                let letftSliderRange = (selectionUI!.location - 25.0)..<(selectionUI!.location + 25.0)
+                if letftSliderRange.contains(panStartLocation!.double) {
+                    action = .moveLeftSlider
+                }
+                
+                let righSliderRange = (selectionUI!.location + selectionUI!.length - 25.0)..<(selectionUI!.location + selectionUI!.length + 25.0)
+                if righSliderRange.contains(panStartLocation!.double) {
+                    action = .moveRightSlider
+                }
+                
+                let middleRange = letftSliderRange.upperBound..<righSliderRange.lowerBound
+                if middleRange.contains(panStartLocation!.double){
+                    action = .moving
+                }
+            } else {
+                let range = selectionUI!.location..<(selectionUI!.location + selectionUI!.length)
+                if range.contains(panStartLocation!.double) {
+                    action = .moving
+                } else {
+                    self.configureSelectionFromPosition(panStartLocation!,
+                                                        toPosition: pan.location(in: self).x,
+                                                        anchor: pan.velocity(in: self).x < 0 ? .right : .left)
+                    action = .selectNewArea
+                }
+            }
+            
+            startSelection = selectionUI
+            
+            break
         case .failed:
             print("pan failed")
         case .ended:
@@ -120,35 +168,56 @@ class DVGAudioWaveformDiagram: UIView {
             if let selection = self.selection {
                 self.delegate?.diagramDidSelect(selection)
             }
+            action = nil
             break
         case .changed:
-            self.configureSelectionFromPosition(panStartLocation!, toPosition: pan.location(in: self).x)
-        default:
-            break
-        }
-    }
-    
-    func handleTapToSelect(_ tap: UILongPressGestureRecognizer) {
-        
-        switch self.pinch.state {
-        case .began, .changed:
-            return
-        default:
-            break
-        }
-        
-        switch tap.state {
-        case .began:
-            self.panStartLocation = pan.location(in: self).x
-            self.configureSelectionFromPosition(_startPosition: tap.location(in: self).x)
-        case .failed:
-            print("tap failed")
-        case .ended:
-            self.configureSelectionFromPosition(_startPosition: tap.location(in: self).x)
-            if let selection = self.selection {
-                self.delegate?.diagramDidSelect(selection)
+            
+            if action == nil {
+                self.configureSelectionFromPosition(panStartLocation!,
+                                                    toPosition: pan.location(in: self).x,
+                                                    anchor: panStartVelocityX!.double < 0.0 ? .right : .left)
+            } else {
+                let delta =  panStartLocation! - pan.location(in: self).x
+                
+                switch action! {
+                    
+                case .moving:
+                    print("Moving !")
+                    print("selection location:\(startSelection!.location) length:\(startSelection!.length)")
+                    print("delta: \(delta)")
+                    let start = startSelection!.location.cgfloat - delta
+                    let end = start + startSelection!.length.cgfloat
+                    print("Move start: \(start) end: \(end)")
+                    self.configureSelectionFromPosition(start, toPosition: end, anchor: .left)
+                    break
+                    
+                case .moveLeftSlider:
+                    print("Moving left slider!")
+                    print("selection location:\(startSelection!.location) length:\(startSelection!.length)")
+                    print("delta: \(delta)")
+                    let start = startSelection!.location + startSelection!.length
+                    let end = pan.location(in: self).x
+                    print("Move start: \(start) end: \(end)")
+                    self.configureSelectionFromPosition(start.cgfloat, toPosition: end, anchor: .right)
+                    break
+                    
+                case .moveRightSlider:
+                    print("Moving right slider!")
+                    let location = startSelection!.location.cgfloat + startSelection!.length.cgfloat - delta
+                    self.configureSelectionFromPosition(startSelection!.location.cgfloat, toPosition: location, anchor: .left)
+                    break
+                    
+                case .selectNewArea:
+                    print("Selecting new area!")
+                    self.configureSelectionFromPosition(panStartLocation!,
+                                                        toPosition: pan.location(in: self).x,
+                                                        anchor: panStartVelocityX!.double < 0.0 ? .right : .left)
+                    break
+                }
             }
-        default:()
+
+        default:
+            break
         }
     }
     
@@ -198,7 +267,7 @@ class DVGAudioWaveformDiagram: UIView {
     
     
     
-    var minSelectionWidth: CGFloat = 40.0
+    var minSelectionWidth: CGFloat = 50.0
     var playbackRelativePosition: CGFloat? = nil {
         didSet {
             if let playbackRelativePosition = playbackRelativePosition,
@@ -219,23 +288,43 @@ class DVGAudioWaveformDiagram: UIView {
             }
         }
     }
-    func configureSelectionFromPosition(_startPosition: CGFloat) {
-        self.configureSelectionFromPosition(_startPosition, toPosition: _startPosition)
+    
+    enum Anchor {
+        case left, right
     }
     
-    func configureSelectionFromPosition(_ _startPosition: CGFloat, toPosition _endPosition: CGFloat) {
-
+    func configureSelectionFromPosition(_ _startPosition: CGFloat, toPosition _endPosition: CGFloat, anchor: Anchor) {
+    
         //TODO: move geometry logic to viewModel (create it first)
         var startPosition = min(_endPosition, _startPosition)
         var endPosition   = max(_endPosition, _startPosition)
         
-        startPosition = startPosition - minSelectionWidth/2
-        endPosition   = endPosition + minSelectionWidth/2
         
+        //pan left slider anchor - right
+        switch anchor {
+            
+        case .right:
+            if _startPosition > _endPosition && abs(endPosition - startPosition) < minSelectionWidth {
+                startPosition = endPosition - minSelectionWidth
+            }
+            if _startPosition <= _endPosition {
+                startPosition = startPosition - minSelectionWidth
+            }
+            break
+            
+        case .left:
+            if _startPosition < _endPosition && abs(endPosition - startPosition) < minSelectionWidth {
+                endPosition = startPosition + minSelectionWidth
+            }
+            if _startPosition >= _endPosition {
+                endPosition = endPosition + minSelectionWidth
+            }
+            break
+        }
         startPosition = max(0, startPosition)
         endPosition   = min(endPosition, self.bounds.width)
         
-        let width = max(endPosition - startPosition, minSelectionWidth)
+        let width = endPosition - startPosition
         
         let range = DataRange(
             location: Double(startPosition / self.bounds.width),
@@ -247,22 +336,12 @@ class DVGAudioWaveformDiagram: UIView {
 }
 
 extension DVGAudioWaveformDiagram: UIGestureRecognizerDelegate {
-    public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        switch (gestureRecognizer, otherGestureRecognizer) {
-        case (panToSelect, tapToSelect):
-            fallthrough
-        case (tapToSelect, panToSelect):
-            return true
-        default:
+    public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool
+    {
             return false
-        }
     }
     
     override public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer == self.panToSelect {
-            self.tapToSelect.isEnabled = false
-            self.tapToSelect.isEnabled = true
-        }
         return true
     }
 }
