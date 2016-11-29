@@ -129,14 +129,16 @@ class DVGAudioWaveformDiagram: UIView {
                                                     toPosition: pan.location(in: self).x,
                                                     anchor: panStartVelocityX!.double < 0.0 ? .right : .left )
                 action = .selectNewArea
-            } else if selectionUI!.length > minSelectionWidth.double {
+            } else if selectionUI!.length >= minSelectionWidth.double - 1 {
                 
-                let letftSliderRange = (selectionUI!.location - 25.0)..<(selectionUI!.location + 25.0)
+                let sliderHalfWidth = 20.0
+                
+                let letftSliderRange = (selectionUI!.location - sliderHalfWidth)..<(selectionUI!.location + sliderHalfWidth)
                 if letftSliderRange.contains(panStartLocation!.double) {
                     action = .moveLeftSlider
                 }
                 
-                let righSliderRange = (selectionUI!.location + selectionUI!.length - 25.0)..<(selectionUI!.location + selectionUI!.length + 25.0)
+                let righSliderRange = (selectionUI!.location + selectionUI!.length - sliderHalfWidth)..<(selectionUI!.location + selectionUI!.length + sliderHalfWidth)
                 if righSliderRange.contains(panStartLocation!.double) {
                     action = .moveRightSlider
                 }
