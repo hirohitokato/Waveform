@@ -101,6 +101,10 @@ class DVGWaveformController: NSObject {
         }
     }
     
+    func stopLoading(){
+        self.diagram?.waveformDiagramView.stopSynchingWithDataSource()
+    }
+    
     public func addDataSource(_ dataSource: ChannelSource) {
         
         channelSourceMapper.addChannelSource(dataSource)

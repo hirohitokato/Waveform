@@ -97,7 +97,9 @@ class DVGAudioWaveformDiagram: UIView {
     //MARK: - Gestures
     private var panStartLocation: CGFloat?
     private var panStartVelocityX: CGFloat?
-
+    
+    var delayedTask : DispatchWorkItem?
+    
     private var selectionUI : DataRange? {
         if selection == nil {
             return nil
@@ -168,7 +170,16 @@ class DVGAudioWaveformDiagram: UIView {
             // notify delegate
             self.panStartLocation = nil
             if let selection = self.selection {
-                self.delegate?.diagramDidSelect(selection)
+                
+                if delayedTask != nil {
+                    delayedTask!.cancel()
+                }
+                
+                delayedTask = DispatchWorkItem { [weak self] in
+                    self?.delegate?.diagramDidSelect(selection)
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7, execute: delayedTask!)
             }
             action = nil
             break
