@@ -31,6 +31,10 @@ class AudioSamplesReader: NSObject {
     
     var progress = Progress()
     
+    func cancel(){
+        self.readingRoutine?.cancelReading()
+    }
+    
     func readAudioFormat(completionBlock: @escaping (AudioFormat?, SamplesReaderError?) -> ()) {
         dispatch_asynch_on_global_processing_queue {
             do {

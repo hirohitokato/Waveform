@@ -102,6 +102,7 @@ class DVGWaveformController: NSObject {
     }
     
     func stopLoading(){
+        self.samplesReader?.cancel()
         self.diagram?.waveformDiagramView.stopSynchingWithDataSource()
     }
     
