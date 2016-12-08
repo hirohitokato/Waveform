@@ -105,8 +105,10 @@ class DVGAudioWaveformDiagram: UIView {
             return nil
         }
         
-        return DataRange(location: selection!.location * bounds.width.double ,
-                           length: selection!.length * bounds.width.double)
+        let convertedSelection = selection?.convertToGeometry(dataSource!.geometry)
+        
+        return DataRange(location: convertedSelection!.location * bounds.width.double ,
+                           length: convertedSelection!.length * bounds.width.double)
     }
     private var startSelection: DataRange?
     
