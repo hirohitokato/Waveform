@@ -40,15 +40,20 @@ class PlaybackPositionView: UIView {
         let position = (self.bounds.width - lineWidth) * relativePosition + lineWidth/2
         
         cursor.center = CGPoint(x: position, y: center.y)
-        
-        self.setNeedsLayout()
+    }
+    
+    public override func layoutSubviews() {
+        positionCursor()
     }
     
     /// Value from 0 to 1
     /// Setting value causes setNeedsDisplay method call
     /// Setting nil causes removing cursor
     var position: CGFloat? {
-        didSet { self.positionCursor() }
+        didSet {
+            self.positionCursor()
+            setNeedsLayout()
+        }
     }
     var lineColor = UIColor.white
     var lineWidth: CGFloat = 2.0
