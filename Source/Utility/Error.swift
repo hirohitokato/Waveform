@@ -19,3 +19,4 @@ enum SamplesReaderError: Error {
 
 struct NoMoreSampleBuffersAvailable: Error {}
 struct NoEnoughData: Error {}
+struct UnknownError: Error {}
