@@ -255,7 +255,7 @@ class DVGAudioWaveformDiagram: UIView {
             self.delegate?.zoomAt(relativeLocation, relativeScale: scale)
             gesture.scale = 1.0
         case .ended:
-            print(self.dataSource?.geometry )
+            print("\(String(describing: self.dataSource?.geometry))")
         default:()
         }
     }

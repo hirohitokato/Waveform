@@ -28,13 +28,13 @@ class ViewController: UIViewController, DVGDiagramMovementsDelegate {
             options.canHandleAdjustmentData = {_ in return false}
             
             phAsset.requestContentEditingInput(with: options) { contentEditingInput, info in
-                print(contentEditingInput, info)
+                print("\(String(describing: contentEditingInput))", info)
                 DispatchQueue.main.async {
                     if let asset = contentEditingInput?.audiovisualAsset {
                         self.waveform.asset = asset
                         self.configureWaveform()
                     } else {
-                        print(info[PHContentEditingInputResultIsInCloudKey])
+                        print("\(String(describing: info[PHContentEditingInputResultIsInCloudKey]))")
                         if let value = info[PHContentEditingInputResultIsInCloudKey] as? Int, value == 1 {
                             self.showAlert("Load video from iCloud first")
                         } else {
@@ -73,7 +73,7 @@ class ViewController: UIViewController, DVGDiagramMovementsDelegate {
     @IBAction func readAudioAndDrawWaveform() {
         self.waveform.readAndDrawSynchronously({[weak self] in
             if $0.1 != nil {
-                print("error:", $0.1)
+                print("error:", "\(String(describing: $0.1))")
                 self?.showAlert("Can't read asset")
             } else {
                 print("waveform finished drawing")
