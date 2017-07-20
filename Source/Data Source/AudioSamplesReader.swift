@@ -159,7 +159,7 @@ final class SamplesReadingRoutine {
     
     static func getAssetReaderAndOutput(asset: AVAsset, audioFormat: AudioFormat) throws -> (AVAssetReader, AVAssetReaderOutput) {
         let sound : AVAssetTrack
-        sound = try asset.tracks(withMediaType: AVMediaTypeAudio).first!
+        sound = asset.tracks(withMediaType: AVMediaTypeAudio).first!
         
         let assetReader: AVAssetReader
         do {
@@ -263,7 +263,7 @@ final class SamplesReadingRoutine {
     
         let samplesContainer = AudioSamplesContainer(buffer: returnedPointer!, length: length, numberOfChannels: audioFormat.numberOfChannels)
         samplesHandler?.handleSamples(samplesContainer)
-        progress.completedUnitCount += samplesContainer.samplesCount
+        progress.completedUnitCount += Int64(samplesContainer.samplesCount)
     }
     
     func checkStatusOfAssetReaderOnComplete() throws {
