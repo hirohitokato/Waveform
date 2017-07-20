@@ -30,7 +30,7 @@ class ViewController: UIViewController, DVGDiagramMovementsDelegate {
             phAsset.requestContentEditingInput(with: options) { contentEditingInput, info in
                 print(contentEditingInput, info)
                 DispatchQueue.main.async {
-                    if let asset = contentEditingInput?.avAsset {
+                    if let asset = contentEditingInput?.audiovisualAsset {
                         self.waveform.asset = asset
                         self.configureWaveform()
                     } else {
